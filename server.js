@@ -9,7 +9,7 @@ const recordRoutes = require('./records.js');
 const chatRoutes   = require('./chat.js');
 
 const app  = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json({ limit: '1mb' }));
