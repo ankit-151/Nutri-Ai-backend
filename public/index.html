@@ -341,7 +341,9 @@ const API_BASE = (() => {
   const saved = localStorage.getItem('na_api_base') || '';
   if (saved) return saved.replace(/\/$/, '');
   const isLocal = window.location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(window.location.hostname);
-  return isLocal ? 'http://localhost:5000/api' : `${window.location.origin}/api`;
+  return isLocal
+    ? 'http://localhost:5000/api'
+    : 'https://nutri-ai-backend-production.up.railway.app/api';
 })();
 const HEALTHCHECK_URL = `${API_BASE}/health`;
 

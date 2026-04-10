@@ -337,11 +337,24 @@ footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:v
 // ════════════════════════════════════════════════════
 // CONFIG — update API_BASE and GOOGLE_CLIENT_ID
 // ════════════════════════════════════════════════════
+// ─── PASTE YOUR RAILWAY URL HERE ──────────────────────────────
+// Go to Railway → your service → Settings → Domains
+// Copy the URL (e.g. https://nutri-ai-production-xxxx.up.railway.app)
+// and paste it below replacing the placeholder:
+const RAILWAY_URL = 'https://nutri-ai-backend-production.up.railway.app';
+// ──────────────────────────────────────────────────────────────
+
 const API_BASE = (() => {
+  // 1. Runtime override (set via the ⚙ Settings → API URL field)
   const saved = localStorage.getItem('na_api_base') || '';
-  if (saved) return saved.replace(/\/$/, '');
+  if (saved && saved !== 'https://YOUR_RAILWAY_APP.up.railway.app/api') return saved.replace(/\/$/, '');
+  // 2. Local dev
   const isLocal = window.location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(window.location.hostname);
-  return isLocal ? 'http://localhost:5000/api' : `${window.location.origin}/api`;
+  if (isLocal) return 'http://localhost:5000/api';
+  // 3. Hardcoded Railway URL (edit RAILWAY_URL above)
+  if (RAILWAY_URL && !RAILWAY_URL.includes('YOUR_RAILWAY_APP')) return RAILWAY_URL.replace(/\/$/, '') + '/api';
+  // 4. Same-origin fallback (if frontend and backend are on same domain)
+  return window.location.origin + '/api';
 })();
 const HEALTHCHECK_URL = `${API_BASE}/health`;
 
@@ -588,6 +601,18 @@ const App = {
         <h2 class="modal-title">Settings</h2>
         <p class="modal-sub">Customize your NutriAI experience</p>
         <div class="modal-section">
+          <div class="modal-section-title">🔗 Backend Connection</div>
+          <div class="form-field" style="margin-bottom:.5rem">
+            <label class="form-label">Railway API URL</label>
+            <input id="s-apiurl" type="url" class="form-input" placeholder="https://your-app.up.railway.app/api" value="${localStorage.getItem('na_api_base')||API_BASE}" autocomplete="off"/>
+            <span style="font-size:.72rem;color:var(--text3);margin-top:.3rem;display:block">Go to Railway → your service → Settings → Domains, copy the URL and add /api at the end</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+            <button style="background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:.4rem .875rem;border-radius:8px;font-size:.8125rem;cursor:pointer;font-family:inherit" onclick="App.testAPIConnection()">🔍 Test Connection</button>
+            <span id="conn-status" style="font-size:.8rem;color:var(--text3)"></span>
+          </div>
+        </div>
+        <div class="modal-section">
           <div class="modal-section-title">🤖 AI Mode</div>
           <div class="form-field" style="margin-bottom:.75rem">
             <label class="form-label">Anthropic API Key</label>
@@ -619,7 +644,20 @@ const App = {
 
   closeSettings(){const m=document.getElementById('settings-modal');m.style.display='none';m.innerHTML='';},
 
+  async testAPIConnection(){
+    const url=(document.getElementById('s-apiurl')?.value?.trim()||API_BASE).replace(/\/api$/,'');
+    const statusEl=document.getElementById('conn-status');
+    if(statusEl){statusEl.textContent='Testing...';statusEl.style.color='var(--text3)';}
+    try{
+      const res=await fetch(url+'/api/health',{signal:AbortSignal.timeout(5000)});
+      const data=await res.json();
+      if(statusEl){statusEl.textContent=data.db==='connected'?'✅ Connected! DB is online':'⚠️ Server OK but DB disconnected';statusEl.style.color=data.db==='connected'?'var(--green)':'var(--orange)';}
+    }catch(e){if(statusEl){statusEl.textContent='❌ Cannot reach server';statusEl.style.color='var(--red)';}}
+  },
+
   async saveSettings(){
+    const apiUrl=document.getElementById('s-apiurl')?.value?.trim()||'';
+    if(apiUrl){localStorage.setItem('na_api_base',apiUrl);}
     const apiKey=document.getElementById('s-apikey')?.value?.trim()||'';
     if(apiKey)localStorage.setItem('na_apikey',apiKey);else localStorage.removeItem('na_apikey');
     if(currentUser){
@@ -631,7 +669,7 @@ const App = {
       catch(e){toast('Failed to save goals: '+e.message,'error');return;}
     }
     this.closeSettings();
-    toast('✓ Settings saved');
+    toast('✓ Settings saved — refresh the page to apply new API URL');
     if(currentUser)this.renderDash();
   },
 
