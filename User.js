@@ -3,38 +3,32 @@ const bcrypt   = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
   name: {
-    type: String,
-    required: [true, 'Name is required'],
-    trim: true,
-    minlength: [2, 'Name must be at least 2 characters']
+    type:      String,
+    required:  [true, 'Name is required'],
+    trim:      true,
+    minlength: [2, 'Name must be at least 2 characters'],
   },
   email: {
-    type: String,
+    type:     String,
     required: [true, 'Email is required'],
-    unique: true,
+    unique:   true,
     lowercase: true,
-    trim: true,
-    match: [/\S+@\S+\.\S+/, 'Please enter a valid email']
+    trim:     true,
   },
   password: {
-    type: String,
-    required: [true, 'Password is required'],
+    type:      String,
+    required:  [true, 'Password is required'],
     minlength: [6, 'Password must be at least 6 characters'],
-    select: false   // never returned in queries by default
+    select:    false,
   },
   goals: {
     calories: { type: Number, default: 2000 },
     protein:  { type: Number, default: 150  },
     carbs:    { type: Number, default: 250  },
-    fats:     { type: Number, default: 65   }
+    fats:     { type: Number, default: 65   },
   },
-  lastLogin: {
-    type: Date
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
+  lastLogin: { type: Date },
+  createdAt: { type: Date, default: Date.now },
 });
 
 // Hash password before saving
@@ -45,7 +39,7 @@ UserSchema.pre('save', async function (next) {
   next();
 });
 
-// Method to compare passwords
+// Compare password method
 UserSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
