@@ -341,9 +341,7 @@ const API_BASE = (() => {
   const saved = localStorage.getItem('na_api_base') || '';
   if (saved) return saved.replace(/\/$/, '');
   const isLocal = window.location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(window.location.hostname);
-  return isLocal
-    ? 'http://localhost:5000/api'
-    : 'https://nutri-ai-backend-production.up.railway.app/api';
+  return isLocal ? 'http://localhost:5000/api' : `${window.location.origin}/api`;
 })();
 const HEALTHCHECK_URL = `${API_BASE}/health`;
 
@@ -454,11 +452,119 @@ const FOOD_DB = {
   lassi:{cal:120,p:5,c:15,f:4,fi:0,iron:.1,ca:180,vc:0,b12:.6,mg:20,k:220},
 };
 
-const NUM_MAP={one:1,two:2,three:3,four:4,five:5,six:6,half:.5};
+// ════════════════════════════════════════════════════
+// GEMINI AI FOOD ANALYSIS
+// ════════════════════════════════════════════════════
+
+// ── Gemini API call ──────────────────────────────────
+async function analyzeWithGemini(input) {
+  const apiKey = localStorage.getItem('na_gemini_key') || '';
+  if (!apiKey || apiKey.length < 20) return null;
+
+  const prompt = `You are a nutrition expert. Analyze this meal and return ONLY a JSON object with no markdown, no explanation, just raw JSON.
+
+Meal: "${input}"
+
+Return this exact JSON structure:
+{
+  "calories": <total kcal as number>,
+  "protein": <grams as number>,
+  "carbs": <grams as number>,
+  "fats": <grams as number>,
+  "fiber": <grams as number>,
+  "iron": <mg as number>,
+  "calcium": <mg as number>,
+  "vitaminC": <mg as number>,
+  "vitaminB12": <mcg as number>,
+  "magnesium": <mg as number>,
+  "potassium": <mg as number>,
+  "detectedFoods": [{"name": "Food Name", "qty": 1}],
+  "aiInsight": "One helpful nutrition tip about this meal"
+}
+
+Be accurate for Indian foods like roti, dal, paneer, rice, sabzi etc. Return ONLY the JSON, nothing else.`;
+
+  try {
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 1000,
+          },
+        }),
+      }
+    );
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      console.error('Gemini error:', err);
+      return null;
+    }
+
+    const data = await resp.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+    const { detectedFoods, aiInsight, ...totals } = parsed;
+
+    return {
+      totals,
+      found: detectedFoods || [],
+      aiInsight: aiInsight || '',
+      source: 'gemini',
+    };
+  } catch (e) {
+    console.error('Gemini parse error:', e);
+    return null;
+  }
+}
+
+// ── Local fallback food database ─────────────────────
+const NUM_MAP = {one:1,two:2,three:3,four:4,five:5,six:6,half:.5};
 function getQty(text,pos){const before=text.substring(Math.max(0,pos-12),pos);const m=before.match(/(\d+\.?\d*)\s*$/);if(m)return parseFloat(m[1]);for(const[w,v]of Object.entries(NUM_MAP))if(before.includes(w))return v;return 1;}
-async function analyzeWithAI(input){const apiKey=localStorage.getItem('na_apikey')||'';if(!apiKey||apiKey.length<20)return null;try{const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,system:'Return ONLY JSON: {calories,protein,carbs,fats,fiber,iron,calcium,vitaminC,vitaminB12,magnesium,potassium,detectedFoods:[{name,qty}],aiInsight}',messages:[{role:'user',content:'Analyze: '+input}]})});if(!resp.ok)return null;const data=await resp.json();const text=data.content?.[0]?.text||'';const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());const{detectedFoods,aiInsight,...totals}=parsed;return{totals,found:detectedFoods||[],aiInsight:aiInsight||'',source:'ai'};}catch{return null;}}
-function analyzeLocal(input){const text=input.toLowerCase();let t={calories:0,protein:0,carbs:0,fats:0,fiber:0,iron:0,calcium:0,vitaminC:0,vitaminB12:0,magnesium:0,potassium:0};const found=[];for(const[food,d]of Object.entries(FOOD_DB)){const idx=text.indexOf(food);if(idx!==-1){const qty=getQty(text,idx);found.push({name:food[0].toUpperCase()+food.slice(1),qty});t.calories+=d.cal*qty;t.protein+=d.p*qty;t.carbs+=d.c*qty;t.fats+=d.f*qty;t.fiber+=d.fi*qty;t.iron+=d.iron*qty;t.calcium+=d.ca*qty;t.vitaminC+=d.vc*qty;t.vitaminB12+=d.b12*qty;t.magnesium+=d.mg*qty;t.potassium+=d.k*qty;}}Object.keys(t).forEach(k=>{t[k]=Math.round(t[k]*10)/10;});const insights=[t.protein>40?'💪 Excellent protein! Your muscles will thank you.':'🥩 Boost protein with eggs, paneer, dal, or chicken.',t.fiber>8?'🌾 Great fiber intake — supports digestion.':'🥦 Add more veggies or whole grains for fiber.',t.vitaminC>30?'🍊 Good Vitamin C — immune system boosted.':'🍋 Add citrus fruits for Vitamin C.',t.calcium>200?'🦴 Solid calcium for strong bones.':'🥛 Add milk, curd or paneer for calcium.'];return{totals:t,found,aiInsight:insights[Math.floor(Math.random()*insights.length)],source:'local'};}
-async function analyzeMeal(input){const ai=await analyzeWithAI(input);if(ai&&ai.found.length>0)return ai;return analyzeLocal(input);}
+
+function analyzeLocal(input) {
+  const text = input.toLowerCase();
+  let t = {calories:0,protein:0,carbs:0,fats:0,fiber:0,iron:0,calcium:0,vitaminC:0,vitaminB12:0,magnesium:0,potassium:0};
+  const found = [];
+  for (const [food, d] of Object.entries(FOOD_DB)) {
+    const idx = text.indexOf(food);
+    if (idx !== -1) {
+      const qty = getQty(text, idx);
+      found.push({name: food[0].toUpperCase()+food.slice(1), qty});
+      t.calories+=d.cal*qty; t.protein+=d.p*qty; t.carbs+=d.c*qty;
+      t.fats+=d.f*qty; t.fiber+=d.fi*qty; t.iron+=d.iron*qty;
+      t.calcium+=d.ca*qty; t.vitaminC+=d.vc*qty; t.vitaminB12+=d.b12*qty;
+      t.magnesium+=d.mg*qty; t.potassium+=d.k*qty;
+    }
+  }
+  Object.keys(t).forEach(k => { t[k] = Math.round(t[k]*10)/10; });
+  const insights = [
+    t.protein>40 ? '💪 Excellent protein! Great for muscle building.' : '🥩 Add eggs, paneer, dal or chicken for more protein.',
+    t.fiber>8 ? '🌾 Great fiber intake — supports digestion.' : '🥦 Add more veggies or whole grains for fiber.',
+    t.vitaminC>30 ? '🍊 Good Vitamin C — immune system boosted.' : '🍋 Add citrus fruits or amla for Vitamin C.',
+    t.calcium>200 ? '🦴 Solid calcium for strong bones.' : '🥛 Add milk, curd or paneer for calcium.',
+  ];
+  return {
+    totals: t,
+    found,
+    aiInsight: insights[Math.floor(Math.random()*insights.length)],
+    source: 'local',
+  };
+}
+
+// ── Main analyze function — Gemini first, then local ─
+async function analyzeMeal(input) {
+  const gemini = await analyzeWithGemini(input);
+  if (gemini && gemini.found.length > 0) return gemini;
+  console.log('Gemini not available — using local database');
+  return analyzeLocal(input);
+}
 
 // ════════════════════════════════════════════════════
 // GOOGLE SIGN-IN HANDLER
@@ -579,9 +685,9 @@ const App = {
   },
 
   openSettings() {
-    const apiKey = localStorage.getItem('na_apikey')||'';
+    const apiKey = localStorage.getItem('na_gemini_key')||'';
     const goals  = currentUser?.goals||{calories:2000,protein:150,carbs:250,fats:65};
-    const hasKey = apiKey.length>20;
+    const hasKey = geminiKey.length>20;
     const modal  = document.getElementById('settings-modal');
     modal.style.cssText='display:flex;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .2s ease';
     modal.innerHTML=`
@@ -592,13 +698,13 @@ const App = {
         <div class="modal-section">
           <div class="modal-section-title">🤖 AI Mode</div>
           <div class="form-field" style="margin-bottom:.75rem">
-            <label class="form-label">Anthropic API Key</label>
-            <input id="s-apikey" type="password" class="form-input" placeholder="sk-ant-api03-..." value="${apiKey}" autocomplete="off"/>
+            <label class="form-label">Google Gemini API Key</label>
+            <input id="s-gemini-key" type="password" class="form-input" placeholder="AIza..." value="${geminiKey}" autocomplete="off"/>
           </div>
           <div class="ai-status">
             <div class="ai-status-dot ${hasKey?'active':''}"></div>
             <span>${hasKey?'✓ AI mode enabled':'No API key — using local database'}</span>
-            ${hasKey?'<span class="modal-tag">Claude AI</span>':'<span class="modal-tag local">Local DB</span>'}
+            ${hasKey?'<span class="modal-tag">Gemini AI</span>':'<span class="modal-tag local">Local DB</span>'}
           </div>
         </div>
         ${currentUser?`
@@ -616,14 +722,14 @@ const App = {
         <button class="modal-btn" onclick="App.saveSettings()">Save Settings</button>
       </div>`;
     modal.addEventListener('click',(e)=>{if(e.target===modal)this.closeSettings();});
-    setTimeout(()=>document.getElementById('s-apikey')?.focus(),80);
+    setTimeout(()=>document.getElementById('s-gemini-key')?.focus(),80);
   },
 
   closeSettings(){const m=document.getElementById('settings-modal');m.style.display='none';m.innerHTML='';},
 
   async saveSettings(){
-    const apiKey=document.getElementById('s-apikey')?.value?.trim()||'';
-    if(apiKey)localStorage.setItem('na_apikey',apiKey);else localStorage.removeItem('na_apikey');
+    const geminiKey=document.getElementById('s-gemini-key')?.value?.trim()||'';
+    if(geminiKey)localStorage.setItem('na_gemini_key',geminiKey);else localStorage.removeItem('na_gemini_key');
     if(currentUser){
       const cal=parseInt(document.getElementById('g-cal')?.value)||2000;
       const pro=parseInt(document.getElementById('g-pro')?.value)||150;
@@ -896,7 +1002,7 @@ const App = {
           <div class="chip-row">${EXAMPLES.map(e=>`<button class="chip" onclick="document.getElementById('meal-input').value='${e}'">${e}</button>`).join('')}</div>
           <div class="input-footer">
             <span class="input-hint">Ctrl+Enter to analyze</span>
-            <button class="analyze-btn" id="analyze-btn" onclick="App.doAnalyze()">${(localStorage.getItem('na_apikey')||'').length>20?'🤖 AI Analyze &amp; Log':'⚡ Analyze &amp; Log Meal'}</button>
+            <button class="analyze-btn" id="analyze-btn" onclick="App.doAnalyze()">${(localStorage.getItem('na_gemini_key')||'').length>20?'🤖 Gemini AI Analyze &amp; Log':'⚡ Analyze &amp; Log Meal'}</button>
           </div>
         </div>
       </div>
