@@ -9,7 +9,30 @@ const chatRoutes = require('./chat.js');
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  'https://nutri-ai-theta-six.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'http://127.0.0.1:5500',
+  'http://127.0.0.1:3000',
+];
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    if (origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS: origin not allowed - ${origin}`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+app.options('*', cors());
 app.use(express.json({ limit: '1mb' }));
 
 // Ensure serverless requests establish a MongoDB connection before hitting routes.
