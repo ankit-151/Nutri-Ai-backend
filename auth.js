@@ -3,6 +3,11 @@ const jwt     = require('jsonwebtoken');
 const User    = require('./User.js');
 
 const router = express.Router();
+router.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
 
 function signToken(userId) {
   return jwt.sign(
