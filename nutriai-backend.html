@@ -219,44 +219,40 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;padding:0 2rem;d
 .del-btn{background:transparent;border:1px solid transparent;color:var(--text3);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:1.125rem;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
 .del-btn:hover:not(:disabled){border-color:var(--red);color:var(--red);background:#ef444410}
 .del-btn:disabled{opacity:.4}
-
-/* ──── PHOTO MEAL ──── */
-.photo-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:.5rem 1rem;border-radius:10px;font-size:.875rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:.5rem;white-space:nowrap}
+.photo-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:.5rem 1rem;border-radius:10px;font-size:.875rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;display:inline-flex;align-items:center;gap:.5rem;white-space:nowrap}
 .photo-btn:hover{border-color:var(--cyan);color:var(--cyan)}
-.photo-input-hidden{display:none}
-.photo-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .2s ease}
-.photo-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:440px;padding:1.75rem;position:relative;animation:scaleIn .25s ease;box-shadow:0 40px 80px #00000070}
+.photo-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);z-index:600;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .2s ease}
+.photo-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:430px;padding:1.75rem;position:relative;animation:scaleIn .25s ease;box-shadow:0 40px 80px #00000080;max-height:90vh;overflow-y:auto}
 .photo-card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
-.photo-drop{border:1.5px dashed var(--border2);border-radius:14px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:1.25rem;position:relative;overflow:hidden}
-.photo-drop:hover,.photo-drop.drag{border-color:var(--cyan);background:#22d3ee08}
+.photo-drop{border:1.5px dashed var(--border2);border-radius:14px;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:1.25rem;position:relative;overflow:hidden}
+.photo-drop:hover{border-color:var(--cyan);background:#22d3ee08}
 .photo-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.photo-drop-icon{font-size:2rem;margin-bottom:.625rem}
-.photo-drop-lbl{font-size:.9375rem;font-weight:500;margin-bottom:.25rem}
+.photo-drop-icon{font-size:2.25rem;margin-bottom:.5rem}
+.photo-drop-lbl{font-size:.9375rem;font-weight:600;margin-bottom:.25rem}
 .photo-drop-sub{font-size:.75rem;color:var(--text3)}
-.photo-preview{border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:1rem;position:relative}
-.photo-preview img{width:100%;max-height:220px;object-fit:cover;display:block}
-.photo-preview-clear{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.photo-meal-type{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:1.25rem}
-.pmt-btn{padding:7px 4px;border:1px solid var(--border2);border-radius:8px;background:var(--surface2);font-size:.75rem;cursor:pointer;font-family:inherit;color:var(--text2);transition:all .15s}
-.pmt-btn.sel{background:var(--cyan);color:var(--bg);border-color:var(--cyan);font-weight:700}
-.photo-analyze-btn{width:100%;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#fff;border:none;padding:.875rem;border-radius:10px;font-size:.9375rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:.5rem}
-.photo-analyze-btn:disabled{opacity:.45;cursor:not-allowed}
-.photo-result{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.25rem;animation:fadeUp .3s ease}
-.photo-result img{width:100%;height:140px;object-fit:cover;display:block}
-.photo-result-body{padding:1rem}
-.photo-result-label{font-size:1rem;font-weight:700;margin-bottom:.25rem}
+.photo-preview-wrap{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:1.25rem}
+.photo-preview-wrap img{width:100%;max-height:200px;object-fit:cover;display:block}
+.photo-preview-clear{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pmt-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:1.25rem}
+.pmt-btn{padding:7px 4px;border:1px solid var(--border2);border-radius:8px;background:var(--surface2);font-size:.75rem;cursor:pointer;font-family:inherit;color:var(--text2);transition:all .15s;text-align:center}
+.pmt-btn.active{background:var(--cyan);color:var(--bg);border-color:var(--cyan);font-weight:700}
+.photo-submit-btn{width:100%;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#fff;border:none;padding:.875rem;border-radius:10px;font-size:.9375rem;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:opacity .2s}
+.photo-submit-btn:disabled{opacity:.45;cursor:not-allowed}
+.photo-err-box{background:#ef444415;border:1px solid #ef444440;border-radius:8px;padding:.625rem .875rem;font-size:.8125rem;color:var(--red);margin-bottom:1rem;display:none}
+.photo-result-img{width:100%;height:140px;object-fit:cover;display:block;border-radius:10px;margin-bottom:1rem}
+.photo-result-title{font-size:1rem;font-weight:700;margin-bottom:.25rem}
 .photo-result-insight{font-size:.8125rem;color:var(--cyan);font-style:italic;margin-bottom:.875rem;line-height:1.5}
-.photo-macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:.875rem}
-.photo-macro{background:var(--surface);border-radius:8px;padding:.625rem .5rem;text-align:center}
+.photo-macro-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:.875rem}
+.photo-macro-box{background:var(--bg);border-radius:8px;padding:.625rem .5rem;text-align:center}
 .photo-macro-val{font-size:1.0625rem;font-weight:700;display:block}
 .photo-macro-key{font-size:.6875rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:1px;display:block}
-.photo-foods-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.875rem}
-.photo-food-chip{font-size:.75rem;padding:3px 9px;background:#22d3ee15;color:var(--cyan);border:1px solid #22d3ee30;border-radius:20px}
-.photo-result-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.photo-action-outline{padding:9px;border-radius:8px;border:1px solid var(--border2);background:transparent;font-size:.8125rem;cursor:pointer;font-family:inherit;color:var(--text2);transition:all .15s}
-.photo-action-outline:hover{border-color:var(--blue);color:var(--blue)}
-.photo-action-primary{padding:9px;border-radius:8px;border:none;background:var(--grad);color:#fff;font-size:.8125rem;font-weight:600;cursor:pointer;font-family:inherit}
-.photo-err{background:#ef444415;border:1px solid #ef444440;border-radius:8px;padding:.625rem .875rem;font-size:.8125rem;color:var(--red);margin-bottom:1rem}
+.photo-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.875rem}
+.photo-chip{font-size:.75rem;padding:3px 9px;background:#22d3ee12;color:var(--cyan);border:1px solid #22d3ee28;border-radius:20px}
+.photo-result-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.photo-btn-outline{padding:9px;border-radius:8px;border:1px solid var(--border2);background:transparent;font-size:.8125rem;cursor:pointer;font-family:inherit;color:var(--text2);transition:all .15s}
+.photo-btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+.photo-btn-confirm{padding:9px;border-radius:8px;border:none;background:var(--grad);color:#fff;font-size:.8125rem;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .2s}
+.photo-btn-confirm:disabled{opacity:.5}
 
 /* ──── HISTORY ──── */
 .hist-page{max-width:1100px;margin:0 auto;padding:80px 2rem 4rem;animation:fadeIn .4s ease}
@@ -943,10 +939,7 @@ const App = {
     return `<div class="dash-page">
       <div class="dash-header">
         <div><p class="dash-date">${today}</p><h1 class="dash-greeting">Good ${tod}, <span class="grad-text">${currentUser.name.split(' ')[0]}</span> 👋</h1></div>
-        <div class="dash-right">
-          <button class="photo-btn" onclick="App.openPhotoModal()">📷 Log by Photo</button>
-          <button class="btn-history" onclick="App.showHistory()">📈 History</button>
-        </div>
+        <div class="dash-right"><button class="photo-btn" onclick="App.openPhotoModal()">📷 Log by Photo</button><button class="btn-history" onclick="App.showHistory()">📈 History</button></div>
       </div>
       <div class="summary-row">
         <div class="calorie-card">
@@ -1102,213 +1095,143 @@ const App = {
     const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const labels=history.map(d=>{const dt=new Date(d.date+'T00:00:00');return `${days[dt.getDay()]} ${months[dt.getMonth()]} ${dt.getDate()}`;}).reverse();
     this._drawChart(history,labels,type);
-  }
-};
-
-  // ── PHOTO MEAL LOGGING ───────────────────────────────
-  _photoFile: null,
-  _photoSrc: null,
-  _photoMealType: 'lunch',
-  _photoAnalyzing: false,
-  _photoNutrition: null,
-
-  openPhotoModal() {
-    this._photoFile = null; this._photoSrc = null;
-    this._photoMealType = 'lunch'; this._photoNutrition = null;
-    const overlay = document.createElement('div');
-    overlay.id = 'photo-modal';
-    overlay.className = 'photo-modal';
-    overlay.innerHTML = this._photoModalHTML();
-    document.body.appendChild(overlay);
-    overlay.addEventListener('click', e => { if(e.target === overlay) this.closePhotoModal(); });
   },
 
-  closePhotoModal() {
-    const m = document.getElementById('photo-modal');
-    if(m) m.remove();
-    this._photoFile = null; this._photoSrc = null; this._photoNutrition = null;
+  // ════════════════════════════════════════════════════
+  // PHOTO MEAL LOGGING
+  // ════════════════════════════════════════════════════
+  _pFile:null, _pSrc:null, _pType:'lunch', _pBusy:false, _pNutrition:null,
+
+  openPhotoModal(){
+    this._pFile=null;this._pSrc=null;this._pType='lunch';this._pNutrition=null;this._pBusy=false;
+    document.getElementById('photo-overlay')?.remove();
+    const ov=document.createElement('div');
+    ov.id='photo-overlay';ov.className='photo-overlay';
+    ov.innerHTML=this._pModalHTML();
+    document.body.appendChild(ov);
+    ov.addEventListener('click',e=>{if(e.target===ov)this.closePhotoModal();});
   },
 
-  _photoModalHTML(showResult) {
-    const mealTypes = ['breakfast','lunch','dinner','snack'];
+  closePhotoModal(){document.getElementById('photo-overlay')?.remove();},
+
+  _pModalHTML(){
+    const types=['breakfast','lunch','dinner','snack'];
     return `<div class="photo-card">
       <button class="modal-close" onclick="App.closePhotoModal()">✕</button>
-      <h2 class="modal-title">📷 Log meal by photo</h2>
-      <p class="modal-sub">Snap your plate — AI identifies foods &amp; estimates nutrition</p>
-      ${this._photoSrc && !showResult ? `
-        <div class="photo-preview">
-          <img src="${this._photoSrc}" alt="Meal preview"/>
-          <button class="photo-preview-clear" onclick="App.clearPhoto()">✕</button>
-        </div>` : !showResult ? `
-        <div class="photo-drop" id="photo-drop">
-          <input type="file" accept="image/*" id="photo-file-input" onchange="App.handlePhotoFile(event)"/>
-          <div class="photo-drop-icon">📸</div>
-          <div class="photo-drop-lbl">Upload or take a photo</div>
-          <div class="photo-drop-sub">JPEG, PNG, WEBP · max 5 MB</div>
-        </div>` : ''}
-      ${showResult && this._photoNutrition ? this._photoResultHTML() : ''}
-      ${!showResult ? `
-      <div class="photo-meal-type">
-        ${mealTypes.map(t=>`<button class="pmt-btn${t===this._photoMealType?' sel':''}" onclick="App.setPhotoMealType('${t}')">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}
-      </div>
-      <div id="photo-err" class="photo-err" style="display:none"></div>
-      <button class="photo-analyze-btn" id="photo-analyze-btn" onclick="App.doPhotoAnalyze()" ${!this._photoSrc?'disabled':''}>
-        ${this._photoSrc ? '🔍 Analyze plate' : '📷 Select a photo first'}
-      </button>` : ''}
+      <h2 class="modal-title">📷 Log Meal by Photo</h2>
+      <p class="modal-sub">Snap your plate — Gemini AI identifies foods & nutrition</p>
+      ${this._pSrc
+        ? `<div class="photo-preview-wrap"><img src="${this._pSrc}"/><button class="photo-preview-clear" onclick="App._pClear()">✕</button></div>`
+        : `<div class="photo-drop" id="p-drop"><input type="file" accept="image/*" onchange="App._pFile=event.target.files[0];App._pLoadSrc(event.target.files[0])"/><div class="photo-drop-icon">📸</div><div class="photo-drop-lbl">Tap to upload or take photo</div><div class="photo-drop-sub">JPEG · PNG · WEBP &nbsp;·&nbsp; max 5 MB</div></div>`
+      }
+      <div class="pmt-row">${types.map(t=>`<button class="pmt-btn${t===this._pType?' active':''}" onclick="App._pType='${t}';App._pRefresh()">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div>
+      <div class="photo-err-box" id="p-err"></div>
+      <button class="photo-submit-btn" id="p-submit-btn" onclick="App._pAnalyze()" ${!this._pSrc||this._pBusy?'disabled':''}>
+        ${this._pBusy?'<div class="btn-spinner"></div> Analyzing...':this._pSrc?'🔍 Analyze Plate':'📷 Select a photo first'}
+      </button>
     </div>`;
   },
 
-  _photoResultHTML() {
-    const n = this._photoNutrition;
-    const foods = (n.detectedFoods||[]).map(f=>`<span class="photo-food-chip">${f.qty>1?f.qty+'× ':''}${f.name}</span>`).join('');
-    return `<div class="photo-result">
-      <img src="${this._photoSrc}" alt="Analyzed meal"/>
-      <div class="photo-result-body">
-        <div class="photo-result-label">${n.mealLabel||'Analyzed meal'}</div>
-        ${n.aiInsight?`<div class="photo-result-insight">💡 ${n.aiInsight}</div>`:''}
-        <div class="photo-macro-grid">
-          <div class="photo-macro"><span class="photo-macro-val" style="color:var(--blue)">${Math.round(n.calories)}</span><span class="photo-macro-key">kcal</span></div>
-          <div class="photo-macro"><span class="photo-macro-val" style="color:var(--blue)">${Math.round(n.protein)}g</span><span class="photo-macro-key">protein</span></div>
-          <div class="photo-macro"><span class="photo-macro-val" style="color:var(--purple)">${Math.round(n.carbs)}g</span><span class="photo-macro-key">carbs</span></div>
-          <div class="photo-macro"><span class="photo-macro-val" style="color:var(--orange)">${Math.round(n.fats)}g</span><span class="photo-macro-key">fats</span></div>
-        </div>
-        ${foods?`<div class="photo-foods-row">${foods}</div>`:''}
-        <div class="photo-result-actions">
-          <button class="photo-action-outline" onclick="App.retakePhoto()">🔄 Retake</button>
-          <button class="photo-action-primary" id="photo-confirm-btn" onclick="App.confirmPhotoMeal()">✓ Log this meal</button>
-        </div>
+  _pResultHTML(){
+    const n=this._pNutrition;
+    const chips=(n.detectedFoods||[]).map(f=>`<span class="photo-chip">${f.qty>1?f.qty+'× ':''}${f.name}</span>`).join('');
+    return `<div class="photo-card">
+      <button class="modal-close" onclick="App.closePhotoModal()">✕</button>
+      <h2 class="modal-title">✅ Analysis Complete</h2>
+      <p class="modal-sub">Confirm to log this meal to today's record</p>
+      <img class="photo-result-img" src="${this._pSrc}"/>
+      <div class="photo-result-title">${n.mealLabel||'Photo meal'}</div>
+      ${n.aiInsight?`<div class="photo-result-insight">💡 ${n.aiInsight}</div>`:''}
+      <div class="photo-macro-row">
+        <div class="photo-macro-box"><span class="photo-macro-val" style="color:var(--blue)">${Math.round(n.calories||0)}</span><span class="photo-macro-key">kcal</span></div>
+        <div class="photo-macro-box"><span class="photo-macro-val" style="color:var(--blue)">${Math.round(n.protein||0)}g</span><span class="photo-macro-key">protein</span></div>
+        <div class="photo-macro-box"><span class="photo-macro-val" style="color:var(--purple)">${Math.round(n.carbs||0)}g</span><span class="photo-macro-key">carbs</span></div>
+        <div class="photo-macro-box"><span class="photo-macro-val" style="color:var(--orange)">${Math.round(n.fats||0)}g</span><span class="photo-macro-key">fats</span></div>
+      </div>
+      ${chips?`<div class="photo-chips">${chips}</div>`:''}
+      <div class="photo-result-btns">
+        <button class="photo-btn-outline" onclick="App.openPhotoModal()">🔄 Retake</button>
+        <button class="photo-btn-confirm" id="p-confirm-btn" onclick="App._pConfirm()">✓ Log this meal</button>
       </div>
     </div>`;
   },
 
-  setPhotoMealType(t) {
-    this._photoMealType = t;
-    this._refreshPhotoModal();
+  _pClear(){this._pFile=null;this._pSrc=null;this._pRefresh();},
+
+  _pRefresh(){
+    const ov=document.getElementById('photo-overlay');
+    if(ov) ov.innerHTML=this._pModalHTML();
   },
 
-  clearPhoto() {
-    this._photoFile = null; this._photoSrc = null;
-    this._refreshPhotoModal();
+  _pLoadSrc(file){
+    if(!file)return;
+    if(file.size>5*1024*1024){toast('Image must be under 5 MB','error');return;}
+    this._pFile=file;
+    const r=new FileReader();
+    r.onload=e=>{this._pSrc=e.target.result;this._pRefresh();};
+    r.readAsDataURL(file);
   },
 
-  retakePhoto() {
-    this._photoNutrition = null;
-    this._photoFile = null; this._photoSrc = null;
-    this._refreshPhotoModal();
-  },
-
-  _refreshPhotoModal(showResult) {
-    const m = document.getElementById('photo-modal');
-    if(!m) return;
-    const card = m.querySelector('.photo-card');
-    if(card) card.outerHTML = this._photoModalHTML(showResult);
-    const newCard = m.querySelector('.photo-card');
-    if(!newCard) {
-      m.innerHTML = this._photoModalHTML(showResult);
-    }
-    // re-attach drag events
-    const drop = document.getElementById('photo-drop');
-    if(drop) {
-      drop.addEventListener('dragover', e=>{e.preventDefault();drop.classList.add('drag');});
-      drop.addEventListener('dragleave', ()=>drop.classList.remove('drag'));
-      drop.addEventListener('drop', e=>{
-        e.preventDefault(); drop.classList.remove('drag');
-        const f = e.dataTransfer.files[0];
-        if(f && f.type.startsWith('image/')) this._loadPhotoFile(f);
-      });
-    }
-  },
-
-  handlePhotoFile(e) {
-    const f = e.target.files[0];
-    if(f) this._loadPhotoFile(f);
-  },
-
-  _loadPhotoFile(file) {
-    if(file.size > 5*1024*1024) { toast('Image must be under 5 MB', 'error'); return; }
-    this._photoFile = file;
-    const reader = new FileReader();
-    reader.onload = e => {
-      this._photoSrc = e.target.result;
-      this._refreshPhotoModal();
-    };
-    reader.readAsDataURL(file);
-  },
-
-  async _resizeImage(file, maxPx=1024) {
-    return new Promise(resolve => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
+  async _pResize(file,maxPx=1024){
+    return new Promise(resolve=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement('canvas');
+        const scale=Math.min(1,maxPx/Math.max(img.width,img.height));
+        canvas.width=img.width*scale; canvas.height=img.height*scale;
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        resolve(canvas.toDataURL('image/jpeg',0.85).split(',')[1]);
       };
-      img.src = URL.createObjectURL(file);
+      img.src=URL.createObjectURL(file);
     });
   },
 
-  async doPhotoAnalyze() {
-    if(this._photoAnalyzing || !this._photoFile) return;
-    this._photoAnalyzing = true;
-    const btn = document.getElementById('photo-analyze-btn');
-    const errBox = document.getElementById('photo-err');
-    if(errBox) errBox.style.display = 'none';
-    if(btn) { btn.disabled=true; btn.innerHTML='<div class="btn-spinner"></div> Analyzing plate...'; }
-
-    const loadMsgs = ['🔍 Examining your plate...','🥘 Identifying ingredients...','📊 Estimating portions...','🧮 Crunching numbers...'];
+  async _pAnalyze(){
+    if(this._pBusy||!this._pFile)return;
+    this._pBusy=true;
+    const errBox=document.getElementById('p-err');
+    const btn=document.getElementById('p-submit-btn');
+    if(errBox){errBox.style.display='none';}
+    if(btn){btn.disabled=true;btn.innerHTML='<div class="btn-spinner"></div> Analyzing...';}
+    const msgs=['🔍 Examining your plate...','🥘 Identifying foods...','📊 Estimating portions...','🧮 Calculating nutrition...'];
     let mi=0;
-    const intv = setInterval(()=>{ mi=(mi+1)%loadMsgs.length; if(btn&&btn.disabled) btn.innerHTML=`<div class="btn-spinner"></div> ${loadMsgs[mi]}`; }, 1600);
-
-    try {
-      const imageBase64 = await this._resizeImage(this._photoFile);
-      const mediaType   = this._photoFile.type || 'image/jpeg';
-      const resp = await fetch(API_BASE + '/records/meal/photo', {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+authToken },
-        body: JSON.stringify({ imageBase64, mediaType, mealType: this._photoMealType, date: new Date().toLocaleDateString('en-CA') })
+    const intv=setInterval(()=>{mi=(mi+1)%msgs.length;const b=document.getElementById('p-submit-btn');if(b&&b.disabled)b.innerHTML=`<div class="btn-spinner"></div> ${msgs[mi]}`;},1500);
+    try{
+      const imageBase64=await this._pResize(this._pFile);
+      const mediaType=this._pFile.type||'image/jpeg';
+      const localDate=new Date().toLocaleDateString('en-CA');
+      const resp=await fetch(API_BASE+'/records/meal/photo',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+        body:JSON.stringify({imageBase64,mediaType,mealType:this._pType,date:localDate})
       });
-      const data = await resp.json();
-      if(!resp.ok) throw new Error(data.error || 'Analysis failed');
-
-      this._photoNutrition = data.nutrition;
-      this._todayRec = data.record;
+      const data=await resp.json();
+      if(!resp.ok)throw new Error(data.error||'Analysis failed');
       clearInterval(intv);
-      this._photoAnalyzing = false;
-
-      // Show result inside modal
-      const m = document.getElementById('photo-modal');
-      if(m) m.innerHTML = `<div class="photo-card">
-        <button class="modal-close" onclick="App.closePhotoModal()">✕</button>
-        <h2 class="modal-title">📷 Log meal by photo</h2>
-        <p class="modal-sub">AI analysis complete — confirm to log</p>
-        ${this._photoResultHTML()}
-      </div>`;
-
-    } catch(err) {
+      this._pBusy=false;
+      this._pNutrition=data.nutrition;
+      this._todayRec=data.record;
+      const ov=document.getElementById('photo-overlay');
+      if(ov)ov.innerHTML=this._pResultHTML();
+    }catch(err){
       clearInterval(intv);
-      this._photoAnalyzing = false;
-      if(btn) { btn.disabled=false; btn.innerHTML='🔍 Analyze plate'; }
-      const eb = document.getElementById('photo-err');
-      if(eb) { eb.textContent = err.message; eb.style.display='block'; }
-      else toast(err.message, 'error');
+      this._pBusy=false;
+      const eb=document.getElementById('p-err');
+      if(eb){eb.textContent='❌ '+err.message;eb.style.display='block';}
+      const b=document.getElementById('p-submit-btn');
+      if(b){b.disabled=false;b.innerHTML='🔍 Analyze Plate';}
     }
   },
 
-  async confirmPhotoMeal() {
-    const btn = document.getElementById('photo-confirm-btn');
-    if(btn) { btn.disabled=true; btn.textContent='Logging...'; }
-    try {
-      toast(`✓ Photo meal logged — ${Math.round(this._photoNutrition?.calories||0)} kcal`);
-      this.closePhotoModal();
-      this.renderDash();
-    } catch(e) {
-      toast('Failed: '+e.message, 'error');
-      if(btn) { btn.disabled=false; btn.textContent='✓ Log this meal'; }
-    }
-  },
+  async _pConfirm(){
+    const btn=document.getElementById('p-confirm-btn');
+    if(btn){btn.disabled=true;btn.textContent='Logging...';}
+    toast('✓ Photo meal logged — '+Math.round(this._pNutrition?.calories||0)+' kcal');
+    this.closePhotoModal();
+    this.renderDash();
+  }
+
+};
 
 // ── INIT ──────────────────────────────────────────────
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape'){const m=document.getElementById('settings-modal');if(m&&m.style.display!=='none')App.closeSettings();}});
