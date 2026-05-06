@@ -2,9 +2,13 @@ const express     = require('express');
 const jwt         = require('jsonwebtoken');
 const DailyRecord = require('./DailyRecord.js');
 
-// ─── Gemini Vision (free tier) ────────────────────────────────────
+// ─── Gemini Vision (free tier — lazy init so build does not fail) ─
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+let _genAI = null;
+function getGenAI() {
+  if (!_genAI) _genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+  return _genAI;
+}
 
 const router = express.Router();
 
@@ -117,7 +121,7 @@ router.post('/meal/photo', async (req, res) => {
     }
 
     // ── Call Gemini 1.5 Flash (free tier) ──────────────────────────
-    const model  = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model  = getGenAI().getGenerativeModel({ model: 'gemini-1.5-flash' });
     const result = await model.generateContent([
       { inlineData: { data: imageBase64, mimeType: mediaType } },
       `You are a nutrition expert. Analyze this food photo carefully.
